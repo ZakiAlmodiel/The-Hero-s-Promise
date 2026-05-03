@@ -1,3 +1,3 @@
 ## System Diagram
 
-![J Diagram](The Hero's Promise/Images/j-diagram.png)
+![J Diagram](The%20Hero%27s%20Promise/Images/j-diagram.png)
