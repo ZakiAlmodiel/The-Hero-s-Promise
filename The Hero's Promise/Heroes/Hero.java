@@ -3,7 +3,6 @@ import Enemy.Enemy;
 import Story.Dialogue;
 
 public abstract class Hero extends Dialogue {
-    // Private fields - ENCAPSULATION
     private String heroName;
     private String skillOneName;
     private String skillTwoName;
@@ -18,28 +17,22 @@ public abstract class Hero extends Dialogue {
     private int skillOneManaCost;
     private int skillTwoManaCost;
     private int skillThreeManaCost;
+    private int level = 1;
+    private int experience = 0;
     
-    // Constructor
-    public Hero(
-        String name, String skillOneName, 
-        String skillTwoName, String skillThreeName, 
-        int skillOneMultiplier, int skillTwoMultiplier, 
-        int skillThreeMultiplier, int skillOneManaCost, 
-        int skillTwoManaCost, int skillThreeManaCost
-    ) {
+    public Hero(String name, String s1n, String s2n, String s3n, int s1m, int s2m, int s3m, int s1c, int s2c, int s3c) {
         this.heroName = name;
-        this.skillOneName = skillOneName;
-        this.skillTwoName = skillTwoName;
-        this.skillThreeName = skillThreeName;
-        this.skillOneMultiplier = skillOneMultiplier;
-        this.skillTwoMultiplier = skillTwoMultiplier;
-        this.skillThreeMultiplier = skillThreeMultiplier;
-        this.skillOneManaCost = skillOneManaCost;
-        this.skillTwoManaCost = skillTwoManaCost;
-        this.skillThreeManaCost = skillThreeManaCost;
+        this.skillOneName = s1n;
+        this.skillTwoName = s2n;
+        this.skillThreeName = s3n;
+        this.skillOneMultiplier = s1m;
+        this.skillTwoMultiplier = s2m;
+        this.skillThreeMultiplier = s3m;
+        this.skillOneManaCost = s1c;
+        this.skillTwoManaCost = s2c;
+        this.skillThreeManaCost = s3c;
     }
     
-    // GETTERS
     public String getHeroName() {
         return heroName;
     }
@@ -96,7 +89,14 @@ public abstract class Hero extends Dialogue {
         return skillThreeManaCost;
     }
     
-    // SETTERS with validation
+    public int getLevel() {
+        return level;
+    }
+    
+    public int getExperience() {
+        return experience;
+    }
+    
     public void setHeroHp(int hp) {
         this.heroHp = Math.min(maxHp, Math.max(0, hp));
     }
@@ -105,9 +105,13 @@ public abstract class Hero extends Dialogue {
         this.heroMana = Math.min(maxMana, Math.max(0, mana));
     }
     
-    // Business methods
     public void takeDamage(int damage) {
         this.heroHp = Math.max(0, this.heroHp - damage);
+    }
+    
+    public void takeDamage(int damage, String source) {
+        this.heroHp = Math.max(0, this.heroHp - damage);
+        System.out.println(source + " dealt " + damage + " damage!");
     }
     
     public boolean hasEnoughMana(int cost) {
@@ -132,33 +136,41 @@ public abstract class Hero extends Dialogue {
         this.heroHp = maxHp;
         this.heroMana = maxMana;
     }
-
+    
+    public void gainExperience(int xp) {
+        this.experience += xp;
+        if (experience >= 100) {
+            levelUp();
+        }
+    }
+    
+    private void levelUp() {
+        level++;
+        experience -= 100;
+        maxHp += 20;
+        maxMana += 15;
+        heroHp = maxHp;
+        heroMana = maxMana;
+        System.out.println("\n*** LEVEL UP! ***");
+        System.out.println(heroName + " is now level " + level + "!");
+        System.out.println("Max HP: " + maxHp + " | Max MP: " + maxMana);
+    }
+    
     public void boostHero(int hpBoost, int manaBoost) {
         this.maxHp += hpBoost;
         this.maxMana += manaBoost;
         this.heroHp = this.maxHp;
         this.heroMana = this.maxMana;
         System.out.println("\n*** HERO POWER UP! ***");
-        System.out.println("Max HP increased by " + hpBoost + " to " + this.maxHp);
-        System.out.println("Max MP increased by " + manaBoost + " to " + this.maxMana);
-        System.out.println("HP and MP fully restored!");
-    }
-    
-    public void displayBackStory() {
-        System.out.println("No back story");
-    }
-    
-    public void displaySkillOptions() {
-        System.out.println("No skills available");
+        System.out.println("Max HP increased to " + this.maxHp);
+        System.out.println("Max MP increased to " + this.maxMana);
     }
     
     public void skillOne(Enemy enemy) {
         if (hasEnoughMana(skillOneManaCost)) {
             useMana(skillOneManaCost);
             enemy.takeDamage(skillOneMultiplier);
-            System.out.println(
-                heroName + " uses " + skillOneName + 
-                "! Deals " + skillOneMultiplier + " damage.");
+            System.out.println(heroName + " uses " + skillOneName + "! Deals " + skillOneMultiplier + " damage.");
         } else {
             System.out.println("Not enough mana for " + skillOneName + "!");
         }
@@ -168,9 +180,7 @@ public abstract class Hero extends Dialogue {
         if (hasEnoughMana(skillTwoManaCost)) {
             useMana(skillTwoManaCost);
             enemy.takeDamage(skillTwoMultiplier);
-            System.out.println(
-                heroName + " uses " + skillTwoName + 
-                "! Deals " + skillTwoMultiplier + " damage.");
+            System.out.println(heroName + " uses " + skillTwoName + "! Deals " + skillTwoMultiplier + " damage.");
         } else {
             System.out.println("Not enough mana for " + skillTwoName + "!");
         }
@@ -180,9 +190,7 @@ public abstract class Hero extends Dialogue {
         if (hasEnoughMana(skillThreeManaCost)) {
             useMana(skillThreeManaCost);
             enemy.takeDamage(skillThreeMultiplier);
-            System.out.println(
-                heroName + " uses " + skillThreeName + 
-                "! Deals " + skillThreeMultiplier + " damage.");
+            System.out.println(heroName + " uses " + skillThreeName + "! Deals " + skillThreeMultiplier + " damage.");
         } else {
             System.out.println("Not enough mana for " + skillThreeName + "!");
         }
@@ -191,30 +199,21 @@ public abstract class Hero extends Dialogue {
     public void healHP() {
         if (heroHp >= maxHp) {
             System.out.printf("\nHP is currently full\n");
-            heroHp = maxHp;
         } else {
-            restoreHp(20);
-            System.out.printf("\nHP replenished by 20\n");
+            restoreHp(35);
+            System.out.printf("\nHP replenished by 35\n");
         }
     }
     
     public void healMana() {
         if (heroMana >= maxMana) {
             System.out.printf("\nMP is currently full\n");
-            heroMana = maxMana;
         } else {
-            restoreMana(20);
-            System.out.printf("\nMP replenished by 20\n");
+            restoreMana(35);
+            System.out.printf("\nMP replenished by 35\n");
         }
     }
     
-    // Abstract methods from Dialogue
-    @Override
-    public abstract void preBattleDialogue();
-    
-    @Override
-    public abstract void victoryDialogue();
-    
-    @Override
-    public abstract void defeatDialogue();
+    public abstract void displayBackStory();
+    public abstract void displaySkillOptions();
 }
