@@ -23,7 +23,7 @@ public class Kyle extends Hero {
     public void displaySkillOptions() {
         System.out.println("Skill 1 (Steel Strike) | " + getSkillOneMultiplier() + " damage | " + getSkillOneManaCost() + " Mana cost");
         System.out.println("Skill 2 (Shield Bash) | " + getSkillTwoMultiplier() + " damage | " + getSkillTwoManaCost() + " Mana cost");
-        System.out.println("Skill 3 (WHinokami Kagura) | " + getSkillThreeMultiplier() + " damage | " + getSkillThreeManaCost() + " Mana cost");
+        System.out.println("Skill 3 (Hinokami Kagura) | " + getSkillThreeMultiplier() + " damage | " + getSkillThreeManaCost() + " Mana cost");
         System.out.println("Skill 4 (Heal HP)");
         System.out.println("Skill 5 (Heal Mana)");
     }
