@@ -1,6 +1,5 @@
 package Levels;
 import java.util.Scanner;
-
 import Enemy.Enemy;
 import Heroes.Hero;
 import Story.Details;
@@ -13,12 +12,7 @@ public class Level2 {
         String[] monsterNames = {"Crypt Lord", "Plagueweaver", "Void Sentinel"};
 
         for (int difficulty = 1; difficulty <= 3; difficulty++) {
-            Enemy enemy = new Enemy(
-                monsterNames[difficulty-1],
-                60 + (difficulty * 10),
-                12 + (difficulty * 3)
-            );
-
+            Enemy enemy = new Enemy(monsterNames[difficulty-1], 60 + (difficulty * 10), 12 + (difficulty * 3));
             boolean currentBattleWon = false;
             Details.displayCurrentDetails(hero, enemy);
 
@@ -33,24 +27,12 @@ public class Level2 {
                 int skillNum = sc.nextInt();
 
                 switch (skillNum) {
-                    case 1:
-                        hero.skillOne(enemy);
-                        break;
-                    case 2:
-                        hero.skillTwo(enemy);
-                        break;
-                    case 3:
-                        hero.skillThree(enemy);
-                        break;
-                    case 4:
-                        hero.healHP();
-                        break;
-                    case 5:
-                        hero.healMana();
-                        break;
-                    default:
-                        System.out.println("Invalid skill choice. Please pick a valid option.");
-                        break;
+                    case 1: hero.skillOne(enemy); break;
+                    case 2: hero.skillTwo(enemy); break;
+                    case 3: hero.skillThree(enemy); break;
+                    case 4: hero.healHP(); break;
+                    case 5: hero.healMana(); break;
+                    default: System.out.println("Invalid skill choice. Please pick a valid option."); break;
                 }
 
                 if (enemy.getEnemyHp() <= 0) {
@@ -58,7 +40,8 @@ public class Level2 {
                     enemy.enemyDefeatedDialogue();
                     Details.displayCurrentDetails(hero, enemy);
                     hero.victoryDialogue();
-                    System.out.println("\nCONGRATULATIONS! You have defeated the monster " + enemy.getEnemyName());
+                    hero.gainExperience(45);
+                    System.out.println("\nCONGRATULATIONS! You have defeated " + enemy.getEnemyName() + "! +45 XP");
                     break;
                 }
 
@@ -73,19 +56,12 @@ public class Level2 {
                 } else {
                     Details.displayCurrentDetails(hero, enemy);
                 }
-
             } while (!currentBattleWon);
-
-            if (!currentBattleWon || hero.getHeroHp() <= 0) {
-                allEnemiesDefeated = false;
-                break;
-            }
         }
 
         if (allEnemiesDefeated && hero.getHeroHp() > 0) {
             System.out.println("\n----CONGRATULATIONS! YOU HAVE FINISHED LEVEL 2----");
         }
-
         return allEnemiesDefeated && hero.getHeroHp() > 0;
     }
 }
