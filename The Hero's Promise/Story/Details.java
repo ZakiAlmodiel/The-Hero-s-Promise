@@ -11,13 +11,13 @@ public class Details {
         System.out.println("Mana: " + hero.getHeroMana() + "/" + hero.getMaxMana());
         System.out.println();
     }
-    
+
     public static void displayCurrentDetails(Hero hero, Enemy enemy) {
         System.out.println();
         System.out.println("--------------------------------------------------");
-        System.out.println("HERO: " + hero.getHeroName() + " | ENEMY: " + enemy.getEnemyName());
-        System.out.println("HP: " + hero.getHeroHp() + " | HP: " + enemy.getEnemyHp());
-        System.out.println("MP: " + hero.getHeroMana() + " | MP: " + enemy.getEnemyMana());
+        System.out.printf("%-15s %20s\n", hero.getHeroName(), enemy.getEnemyName());
+        System.out.printf("HP: %-10d HP: %d\n", hero.getHeroHp(), enemy.getEnemyHp());
+        System.out.printf("MP: %-10d MP: %d\n", hero.getHeroMana(), enemy.getEnemyMana());
         System.out.println("--------------------------------------------------");
     }
 }
