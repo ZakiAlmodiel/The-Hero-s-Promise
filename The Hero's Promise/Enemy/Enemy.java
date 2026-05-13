@@ -35,13 +35,34 @@ public class Enemy {
         this.enemyHp = Math.max(0, hp);
     }
     
+    public void setEnemyMana(int mana) {
+        this.enemyMana = Math.max(0, mana);
+    }
+    
     public void takeDamage(int damage) {
         this.enemyHp = Math.max(0, this.enemyHp - damage);
+    }
+    
+    public void heal(int amount) {
+        this.enemyHp = Math.min(150, this.enemyHp + amount);
+    }
+    
+    public void drainMana(int amount) {
+        this.enemyMana = Math.max(0, this.enemyMana - amount);
     }
     
     public void enemyAttack(Hero hero) {
         int damage = this.enemyDamage;
         hero.takeDamage(damage);
         System.out.print(enemyName + " attacked! Dealt " + damage + " damage");
+    }
+    
+    public void enemyDefeatedDialogue() {
+        String[] deathDialogues = {
+            "Enemy: Nooo... my gold...",
+            "Enemy: Impossible... I'm... strong..."
+        };
+        System.out.printf("\n%s\n", deathDialogues[dialogueCounter % 2]);
+        dialogueCounter++;
     }
 }
