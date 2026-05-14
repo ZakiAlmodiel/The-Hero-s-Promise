@@ -11,6 +11,9 @@ public class BackgroundPanel extends JPanel {
     private BufferedImage currentImage;
     private Map<String, BufferedImage> imageCache;
     private String currentBgName;
+    private Timer fadeTimer;
+    private float currentAlpha = 1.0f;
+    private BufferedImage nextImage;
     
     public BackgroundPanel() {
         setOpaque(true);
@@ -57,6 +60,40 @@ public class BackgroundPanel extends JPanel {
         repaint();
     }
     
+    public void fadeToBackground(String name, int durationMs) {
+        BufferedImage newImg = imageCache.get(name);
+        if (newImg == null) {
+            loadBackground(name);
+            newImg = imageCache.get(name);
+        }
+        
+        if (newImg == null || newImg == currentImage) return;
+        
+        nextImage = newImg;
+        currentAlpha = 1.0f;
+        
+        if (fadeTimer != null && fadeTimer.isRunning()) {
+            fadeTimer.stop();
+        }
+        
+        long startTime = System.currentTimeMillis();
+        fadeTimer = new Timer(16, e -> {
+            long elapsed = System.currentTimeMillis() - startTime;
+            if (elapsed >= durationMs) {
+                currentImage = nextImage;
+                currentBgName = name;
+                currentAlpha = 1.0f;
+                nextImage = null;
+                fadeTimer.stop();
+                repaint();
+            } else {
+                currentAlpha = 1.0f - ((float) elapsed / durationMs);
+                repaint();
+            }
+        });
+        fadeTimer.start();
+    }
+    
     public void setImage(BufferedImage img) {
         this.currentImage = img;
         repaint();
@@ -80,7 +117,17 @@ public class BackgroundPanel extends JPanel {
             g2.fillRect(0, 0, getWidth(), getHeight());
         }
         
-        g2.setColor(new Color(0, 0, 0, 80));
-        g2.fillRect(0, getHeight() - 40, getWidth(), 40);
+        if (nextImage != null && currentAlpha < 1.0f) {
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f - currentAlpha));
+            g2.drawImage(nextImage, 0, 0, getWidth(), getHeight(), null);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+        }
+        
+        g2.setColor(new Color(0, 0, 0, 60));
+        g2.fillRect(0, getHeight() - 50, getWidth(), 50);
+        
+        GradientPaint vignette = new GradientPaint(0, 0, new Color(0, 0, 0, 0), getWidth() / 2, getHeight() / 2, new Color(0, 0, 0, 80));
+        g2.setPaint(vignette);
+        g2.fillRect(0, 0, getWidth(), getHeight());
     }
 }
