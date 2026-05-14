@@ -6,13 +6,23 @@ public class Enemy {
     private int enemyHp;
     private int enemyMana;
     private int enemyDamage;
+    private int maxHp;
     private static int dialogueCounter = 0;
+    private String[] deathDialogues;
     
     public Enemy(String name, int hp, int attack) {
         this.enemyName = name;
         this.enemyHp = hp;
+        this.maxHp = hp;
         this.enemyDamage = attack;
-        this.enemyMana = 0;
+        this.enemyMana = 50;
+        this.deathDialogues = new String[]{
+            "Enemy: Nooo... my gold...",
+            "Enemy: Impossible... I'm... strong...",
+            "Enemy: My spells... failed me...",
+            "Enemy: Death... takes me again...",
+            "Enemy: I... am... eternal..."
+        };
     }
     
     public String getEnemyName() {
@@ -31,12 +41,16 @@ public class Enemy {
         return enemyDamage;
     }
     
+    public int getMaxHp() {
+        return maxHp;
+    }
+    
     public void setEnemyHp(int hp) {
-        this.enemyHp = Math.max(0, hp);
+        this.enemyHp = Math.max(0, Math.min(maxHp, hp));
     }
     
     public void setEnemyMana(int mana) {
-        this.enemyMana = Math.max(0, mana);
+        this.enemyMana = Math.max(0, Math.min(100, mana));
     }
     
     public void takeDamage(int damage) {
@@ -44,7 +58,7 @@ public class Enemy {
     }
     
     public void heal(int amount) {
-        this.enemyHp = Math.min(150, this.enemyHp + amount);
+        this.enemyHp = Math.min(maxHp, this.enemyHp + amount);
     }
     
     public void drainMana(int amount) {
@@ -54,15 +68,27 @@ public class Enemy {
     public void enemyAttack(Hero hero) {
         int damage = this.enemyDamage;
         hero.takeDamage(damage);
-        System.out.print(enemyName + " attacked! Dealt " + damage + " damage");
+        System.out.println();
+        System.out.print(enemyName + " has attacked you! Dealt " + damage + " damage");
+    }
+    
+    public void strongAttack(Hero hero) {
+        int damage = this.enemyDamage + 8;
+        hero.takeDamage(damage);
+        System.out.println();
+        System.out.print(enemyName + " uses POWER ATTACK! Dealt " + damage + " damage");
     }
     
     public void enemyDefeatedDialogue() {
-        String[] deathDialogues = {
-            "Enemy: Nooo... my gold...",
-            "Enemy: Impossible... I'm... strong..."
-        };
-        System.out.printf("\n%s\n", deathDialogues[dialogueCounter % 2]);
+        System.out.printf("\n%s\n", deathDialogues[dialogueCounter % deathDialogues.length]);
         dialogueCounter++;
+    }
+    
+    public boolean isBoss() {
+        return maxHp >= 150;
+    }
+    
+    public double getHpPercentage() {
+        return (double) enemyHp / maxHp * 100;
     }
 }
