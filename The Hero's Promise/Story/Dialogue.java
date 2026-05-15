@@ -5,7 +5,11 @@ public abstract class Dialogue {
     public abstract void victoryDialogue();
     public abstract void defeatDialogue();
     
-    public void displayDialogue(String message) {
-        System.out.println(message);
+    public void displayDialogue(String message, String speaker) {
+        System.out.println(speaker + ": " + message);
+    }
+    
+    public void displayNarration(String message) {
+        System.out.println("▶ " + message);
     }
 }
