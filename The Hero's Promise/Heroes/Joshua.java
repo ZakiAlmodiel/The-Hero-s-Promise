@@ -7,16 +7,18 @@ public class Joshua extends Hero {
 
     @Override
     public void displayBackStory() {
-        System.out.println("Joshua's backstory - holy paladin from monastery.");
+        System.out.println("-----------------BACKSTORY-------------------");
+        System.out.println("Joshua was raised in a secluded monastery.");
+        System.out.println("Armed with holy power, he smites evil wherever it lurks.");
     }
 
     @Override
     public void displaySkillOptions() {
-        System.out.println("Skill 1: Holy Smite");
-        System.out.println("Skill 2: Divine Shield");
-        System.out.println("Skill 3: Judgment");
-        System.out.println("Skill 4: Heal HP");
-        System.out.println("Skill 5: Heal Mana");
+        System.out.println("Skill 1 (Holy Smite) | 10 damage | 10 Mana");
+        System.out.println("Skill 2 (Divine Shield) | 15 damage | 15 Mana");
+        System.out.println("Skill 3 (Judgment) | 20 damage | 20 Mana");
+        System.out.println("Skill 4 (Heal HP)");
+        System.out.println("Skill 5 (Heal Mana)");
     }
 
     @Override
@@ -26,7 +28,7 @@ public class Joshua extends Hero {
 
     @Override
     public void victoryDialogue() {
-        System.out.printf("\nJoshua: Righteous triumph.\n");
+        System.out.printf("\nJoshua: The righteous always triumph.\n");
     }
 
     @Override
