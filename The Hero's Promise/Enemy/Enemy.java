@@ -4,53 +4,35 @@ import Heroes.Hero;
 public class Enemy {
     private String enemyName;
     private int enemyHp;
-    private int enemyMana;
     private int enemyDamage;
-    private int maxHp;
-    private static int dialogueCounter = 0;
+    // enemyMana not yet added; heal() and drainMana() not yet thought of
     
     public Enemy(String name, int hp, int attack) {
         this.enemyName = name;
         this.enemyHp = hp;
-        this.maxHp = hp;
         this.enemyDamage = attack;
-        this.enemyMana = 50;
     }
     
     public String getEnemyName() { return enemyName; }
-    public int getEnemyHp() { return enemyHp; }
-    public int getEnemyMana() { return enemyMana; }
+    public int getEnemyHp()     { return enemyHp; }
     public int getEnemyDamage() { return enemyDamage; }
-    public int getMaxHp() { return maxHp; }
     
-    public void setEnemyHp(int hp) { this.enemyHp = Math.max(0, Math.min(maxHp, hp)); }
-    public void setEnemyMana(int mana) { this.enemyMana = Math.max(0, Math.min(100, mana)); }
+    public void setEnemyHp(int hp) {
+        this.enemyHp = hp; // no Math.max(0, hp) guard yet
+    }
     
-    public void takeDamage(int damage) { this.enemyHp = Math.max(0, this.enemyHp - damage); }
-    
-    public void heal(int amount) { this.enemyHp = Math.min(maxHp, this.enemyHp + amount); }
-    
-    public void drainMana(int amount) { this.enemyMana = Math.max(0, this.enemyMana - amount); }
+    public void takeDamage(int damage) {
+        this.enemyHp -= damage; // can go negative; not yet guarded
+    }
     
     public void enemyAttack(Hero hero) {
-        int damage = this.enemyDamage;
-        hero.takeDamage(damage);
-        System.out.println();
-        System.out.print(enemyName + " has attacked you! Dealt " + damage + " damage");
+        hero.takeDamage(enemyDamage);
+        System.out.println(enemyName + " attacked! Dealt " + enemyDamage + " damage.");
+        // no blank line formatting yet
     }
     
     public void enemyDefeatedDialogue() {
-        String[] deathDialogues = {
-            "Enemy: Nooo... my gold...",
-            "Enemy: Impossible... I'm... strong...",
-            "Enemy: My spells... failed me...",
-            "Enemy: Death... takes me again...",
-            "Enemy: I... am... eternal..."
-        };
-        System.out.printf("\n%s\n", deathDialogues[dialogueCounter % deathDialogues.length]);
-        dialogueCounter++;
+        // only one death line so far; rotation array not yet implemented
+        System.out.println("Enemy: Nooo... my gold...");
     }
-    
-    public boolean isBoss() { return maxHp >= 150; }
-    public double getHpPercentage() { return (double) enemyHp / maxHp * 100; }
 }
