@@ -4,19 +4,33 @@ import Story.Dialogue;
 
 public abstract class Hero extends Dialogue {
     private String heroName;
+    private String skillOneName;
+    private String skillTwoName;
+    private String skillThreeName;
     private int maxHp = 100;
     private int maxMana = 100;
     private int heroHp = 100;
     private int heroMana = 100;
-    private int skillOneMultiplier = 10;
-    private int skillTwoMultiplier = 15;
-    private int skillThreeMultiplier = 20;
-    private int skillOneManaCost = 10;
-    private int skillTwoManaCost = 15;
-    private int skillThreeManaCost = 20;
+    private int skillOneMultiplier;
+    private int skillTwoMultiplier;
+    private int skillThreeMultiplier;
+    private int skillOneManaCost;
+    private int skillTwoManaCost;
+    private int skillThreeManaCost;
+    private int level = 1;
+    private int experience = 0;
     
-    public Hero(String name) {
+    public Hero(String name, String s1n, String s2n, String s3n, int s1m, int s2m, int s3m, int s1c, int s2c, int s3c) {
         this.heroName = name;
+        this.skillOneName = s1n;
+        this.skillTwoName = s2n;
+        this.skillThreeName = s3n;
+        this.skillOneMultiplier = s1m;
+        this.skillTwoMultiplier = s2m;
+        this.skillThreeMultiplier = s3m;
+        this.skillOneManaCost = s1c;
+        this.skillTwoManaCost = s2c;
+        this.skillThreeManaCost = s3c;
     }
     
     public String getHeroName() {
@@ -37,6 +51,18 @@ public abstract class Hero extends Dialogue {
     
     public int getMaxMana() {
         return maxMana;
+    }
+    
+    public String getSkillOneName() {
+        return skillOneName;
+    }
+    
+    public String getSkillTwoName() {
+        return skillTwoName;
+    }
+    
+    public String getSkillThreeName() {
+        return skillThreeName;
     }
     
     public int getSkillOneMultiplier() {
@@ -63,6 +89,14 @@ public abstract class Hero extends Dialogue {
         return skillThreeManaCost;
     }
     
+    public int getLevel() {
+        return level;
+    }
+    
+    public int getExperience() {
+        return experience;
+    }
+    
     public void setHeroHp(int hp) {
         this.heroHp = Math.min(maxHp, Math.max(0, hp));
     }
@@ -73,6 +107,11 @@ public abstract class Hero extends Dialogue {
     
     public void takeDamage(int damage) {
         this.heroHp = Math.max(0, this.heroHp - damage);
+    }
+    
+    public void takeDamage(int damage, String source) {
+        this.heroHp = Math.max(0, this.heroHp - damage);
+        System.out.println(source + " dealt " + damage + " damage!");
     }
     
     public boolean hasEnoughMana(int cost) {
@@ -98,13 +137,42 @@ public abstract class Hero extends Dialogue {
         this.heroMana = maxMana;
     }
     
+    public void gainExperience(int xp) {
+        this.experience += xp;
+        if (experience >= 100) {
+            levelUp();
+        }
+    }
+    
+    private void levelUp() {
+        level++;
+        experience -= 100;
+        maxHp += 20;
+        maxMana += 15;
+        heroHp = maxHp;
+        heroMana = maxMana;
+        System.out.println("\n*** LEVEL UP! ***");
+        System.out.println(heroName + " is now level " + level + "!");
+        System.out.println("Max HP: " + maxHp + " | Max MP: " + maxMana);
+    }
+    
+    public void boostHero(int hpBoost, int manaBoost) {
+        this.maxHp += hpBoost;
+        this.maxMana += manaBoost;
+        this.heroHp = this.maxHp;
+        this.heroMana = this.maxMana;
+        System.out.println("\n*** HERO POWER UP! ***");
+        System.out.println("Max HP increased to " + this.maxHp);
+        System.out.println("Max MP increased to " + this.maxMana);
+    }
+    
     public void skillOne(Enemy enemy) {
         if (hasEnoughMana(skillOneManaCost)) {
             useMana(skillOneManaCost);
             enemy.takeDamage(skillOneMultiplier);
-            System.out.println(heroName + " uses skill! Deals " + skillOneMultiplier + " damage.");
+            System.out.println(heroName + " uses " + skillOneName + "! Deals " + skillOneMultiplier + " damage.");
         } else {
-            System.out.println("Not enough mana!");
+            System.out.println("Not enough mana for " + skillOneName + "!");
         }
     }
     
@@ -112,9 +180,9 @@ public abstract class Hero extends Dialogue {
         if (hasEnoughMana(skillTwoManaCost)) {
             useMana(skillTwoManaCost);
             enemy.takeDamage(skillTwoMultiplier);
-            System.out.println(heroName + " uses skill! Deals " + skillTwoMultiplier + " damage.");
+            System.out.println(heroName + " uses " + skillTwoName + "! Deals " + skillTwoMultiplier + " damage.");
         } else {
-            System.out.println("Not enough mana!");
+            System.out.println("Not enough mana for " + skillTwoName + "!");
         }
     }
     
@@ -122,27 +190,27 @@ public abstract class Hero extends Dialogue {
         if (hasEnoughMana(skillThreeManaCost)) {
             useMana(skillThreeManaCost);
             enemy.takeDamage(skillThreeMultiplier);
-            System.out.println(heroName + " uses skill! Deals " + skillThreeMultiplier + " damage.");
+            System.out.println(heroName + " uses " + skillThreeName + "! Deals " + skillThreeMultiplier + " damage.");
         } else {
-            System.out.println("Not enough mana!");
+            System.out.println("Not enough mana for " + skillThreeName + "!");
         }
     }
     
     public void healHP() {
         if (heroHp >= maxHp) {
-            System.out.printf("\nHP is full\n");
+            System.out.printf("\nHP is currently full\n");
         } else {
             restoreHp(35);
-            System.out.printf("\nHP restored by 35\n");
+            System.out.printf("\nHP replenished by 35\n");
         }
     }
     
     public void healMana() {
         if (heroMana >= maxMana) {
-            System.out.printf("\nMP is full\n");
+            System.out.printf("\nMP is currently full\n");
         } else {
             restoreMana(35);
-            System.out.printf("\nMP restored by 35\n");
+            System.out.printf("\nMP replenished by 35\n");
         }
     }
     
