@@ -21,12 +21,11 @@ public class Joshua extends Hero {
         System.out.println();
         System.out.println(
             "Joshua was raised in a secluded monastery, studying " +
-            "ancent texts and divine arts. When darkness spread " +
+            "ancient texts and divine arts. When darkness spread " +
             "across the land, the elders sent him forth as their " +
             "champion. Armed with unwavering faith and holy power, " +
             "he walks the path of light, healing the wounded and " +
             "smiting evil wherever it lurks."
-            // typo "ancent" not yet caught and corrected
         );
     }
 
