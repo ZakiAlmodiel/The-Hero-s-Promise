@@ -10,18 +10,27 @@ public class Level1 {
     public static boolean battleMechanic1(Hero hero) {
         boolean allEnemiesDefeated = true;
         String[] monsterNames = {"Shadowblade", "Frostlord", "Demonking"};
+        int[] monsterHp = {48, 56, 64};
+        int[] monsterDmg = {10, 12, 14};
+
+        Story.Story.beforeLevel1();
+        hero.preBattleDialogue();
 
         for (int difficulty = 1; difficulty <= 3; difficulty++) {
-            Enemy enemy = new Enemy(monsterNames[difficulty-1], 40 + (difficulty * 8), 8 + (difficulty * 2));
+            Enemy enemy = new Enemy(monsterNames[difficulty-1], monsterHp[difficulty-1], monsterDmg[difficulty-1]);
             boolean currentBattleWon = false;
+            
+            System.out.println("\n=================== BATTLE " + difficulty + " ===================");
+            System.out.println("You face: " + enemy.getEnemyName() + " (HP: " + enemy.getEnemyHp() + ")");
             Details.displayCurrentDetails(hero, enemy);
 
             do {
+                System.out.println("\n--- Your Turn ---");
                 hero.displaySkillOptions();
-                System.out.print("Pick a skill (1-5): ");
+                System.out.print("Choose action (1-5): ");
                 
                 while (!sc.hasNextInt()) {
-                    System.out.println("Invalid input. Please enter a number.");
+                    System.out.println("Invalid input. Enter number 1-5:");
                     sc.next();
                 }
                 int skillNum = sc.nextInt();
@@ -43,31 +52,48 @@ public class Level1 {
                         hero.healMana();
                         break;
                     default:
-                        System.out.println("Invalid skill choice.");
+                        System.out.println("Invalid skill choice. Turn lost!");
                         break;
                 }
 
                 if (enemy.getEnemyHp() <= 0) {
                     currentBattleWon = true;
                     enemy.enemyDefeatedDialogue();
-                    Details.displayCurrentDetails(hero, enemy);
+                    System.out.println("\n✦ VICTORY! ✦ " + enemy.getEnemyName() + " has been defeated!");
                     hero.victoryDialogue();
-                    System.out.println("\nYou defeated " + enemy.getEnemyName() + "!");
+                    hero.gainExperience(30);
+                    System.out.println("+30 XP gained!");
                     break;
                 }
 
-                enemy.enemyAttack(hero);
-                Details.displayCurrentDetails(hero, enemy);
+                System.out.println("\n--- Enemy Turn ---");
+                if (enemy.getEnemyHp() < enemy.getMaxHp() * 0.3 && enemy.getEnemyMana() >= 15) {
+                    enemy.strongAttack(hero);
+                    enemy.drainMana(15);
+                } else {
+                    enemy.enemyAttack(hero);
+                }
 
                 if (hero.getHeroHp() <= 0) {
+                    System.out.println();
                     hero.defeatDialogue();
-                    System.out.println("---------GAME OVER!---------");
+                    System.out.println("╔════════════════════════════════════╗");
+                    System.out.println("║          GAME OVER                 ║");
+                    System.out.println("║      You have been defeated!       ║");
+                    System.out.println("╚════════════════════════════════════╝");
                     return false;
                 }
+                
+                Details.displayCurrentDetails(hero, enemy);
+                System.out.println("----------------------------------------");
+
             } while (!currentBattleWon);
         }
 
-        System.out.println("\n----LEVEL 1 COMPLETE!----");
+        System.out.println("\n╔════════════════════════════════════════════════════╗");
+        System.out.println("║     CONGRATULATIONS! YOU HAVE FINISHED LEVEL 1    ║");
+        System.out.println("╚════════════════════════════════════════════════════╝");
+        Story.Story.afterLevel1();
         return true;
     }
 }
