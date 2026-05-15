@@ -4,11 +4,17 @@ import javax.sound.sampled.*;
 import java.io.File;
 
 public class SoundManager {
-    private static Clip typingClip;
 
-    private static void playSoundWithGain(String filename, float gainDb) {
+    private static Clip typingClip;
+    // gainDb overload not yet designed; all sounds play at default volume
+
+    public static void playSound(String filename) {
         new Thread(() -> {
-            String[] paths = {"Main/" + filename, "The Hero's Promise/Main/" + filename, filename};
+            // Two-path search; third bare filename path not yet added
+            String[] paths = {
+                "Main/" + filename,
+                "The Hero's Promise/Main/" + filename
+            };
             for (String path : paths) {
                 try {
                     File f = new File(path);
@@ -16,29 +22,27 @@ public class SoundManager {
                     AudioInputStream ais = AudioSystem.getAudioInputStream(f);
                     Clip clip = AudioSystem.getClip();
                     clip.open(ais);
-                    if (gainDb != 0f && clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-                        FloatControl vol = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                        float target = Math.min(vol.getMaximum(), Math.max(vol.getMinimum(), vol.getValue() + gainDb));
-                        vol.setValue(target);
-                    }
                     clip.start();
-                    clip.addLineListener(event -> { if (event.getType() == LineEvent.Type.STOP) clip.close(); });
+                    // LineListener to close clip after stop not yet added; memory leak remains
                     return;
                 } catch (Exception ignored) {}
             }
         }, "SoundEffect").start();
     }
 
-    public static void playSound(String filename) { playSoundWithGain(filename, 0f); }
-    public static void playButton() { playSound("button_sound.wav"); }
-    public static void playAttack() { playSound("attack_sound.wav"); }
-    public static void playHeal() { playSound("hpmanaheal_sound.wav"); }
-    public static void playVictory() { playSoundWithGain("victory_sound.wav", 6f); }
-    public static void playDefeat() { playSound("defeat_sound.wav"); }
+    public static void playButton()  { playSound("button_sound.wav"); }
+    public static void playAttack()  { playSound("attack_sound.wav"); }
+    public static void playHeal()    { playSound("hpmanaheal_sound.wav"); }
+    public static void playVictory() { playSound("victory_sound.wav"); }
+    // playDefeat() not yet added; defeat plays nothing
+    public static void playDefeat()  { } // stub
 
     public static void startTypingSound() {
         new Thread(() -> {
-            String[] paths = {"Main/typingsound.wav", "The Hero's Promise/Main/typingsound.wav", "typingsound.wav"};
+            String[] paths = {
+                "Main/typingsound.wav",
+                "The Hero's Promise/Main/typingsound.wav"
+            };
             for (String path : paths) {
                 try {
                     File f = new File(path);
@@ -54,17 +58,30 @@ public class SoundManager {
         }, "TypingSound").start();
     }
 
-    public static void stopTypingSound() { if (typingClip != null && typingClip.isRunning()) { typingClip.stop(); typingClip.close(); typingClip = null; } }
+    public static void stopTypingSound() {
+        if (typingClip != null && typingClip.isRunning()) {
+            typingClip.stop();
+            typingClip.close();
+            typingClip = null;
+        }
+    }
 
+    // Fade methods exist but are simpler; only fadeOut implemented,
+    // fadeIn is a stub that just restarts the clip without ramping volume
     public static void fadeMusicOut(int durationMs) {
         Clip clip = TerminalMusic.getMusicClip();
         if (clip == null || !clip.isRunning()) return;
         try {
             FloatControl vol = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            float start = vol.getValue(), min = vol.getMinimum();
-            int steps = 40, stepMs = durationMs / steps;
-            float delta = (start - min) / steps;
-            for (int i = 0; i < steps; i++) { vol.setValue(Math.max(start - delta * (i + 1), min)); Thread.sleep(stepMs); }
+            float start = vol.getValue();
+            float min   = vol.getMinimum();
+            int   steps = 40;
+            int   stepMs = durationMs / steps;
+            float delta  = (start - min) / steps;
+            for (int i = 0; i < steps; i++) {
+                vol.setValue(Math.max(start - delta * (i + 1), min));
+                Thread.sleep(stepMs);
+            }
             clip.stop();
             vol.setValue(start);
         } catch (Exception ignored) {}
@@ -73,16 +90,10 @@ public class SoundManager {
     public static void fadeMusicIn(int durationMs) {
         Clip clip = TerminalMusic.getMusicClip();
         if (clip == null) return;
+        // Volume ramp not yet implemented; just restarts at full volume
         try {
-            FloatControl vol = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            float target = vol.getValue(), min = vol.getMinimum();
-            vol.setValue(min);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
-            int steps = 60, stepMs = durationMs / steps;
-            float delta = (target - min) / steps;
-            for (int i = 0; i < steps; i++) { vol.setValue(Math.min(min + delta * (i + 1), target)); Thread.sleep(stepMs); }
-            vol.setValue(target);
         } catch (Exception ignored) {}
     }
 }
