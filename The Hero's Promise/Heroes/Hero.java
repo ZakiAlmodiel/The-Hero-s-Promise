@@ -212,7 +212,7 @@ public abstract class Hero {
             System.out.printf("\nMP is currently full\n");
         } else {
             restoreMana(35);
-            System.out.printf("\nMP replenished by 35\n");
+            
         }
     }
 
