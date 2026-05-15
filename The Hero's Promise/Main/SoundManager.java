@@ -7,9 +7,12 @@ import java.util.Map;
 public class SoundManager {
     private static Map<String, Clip> soundCache = new HashMap<>();
     private static Clip currentBGM;
-    private static float currentVolume = 1.0f;
+    private static float currentVolume = 0.7f;
+    private static boolean muted = false;
     
     public static void playSound(String filename) {
+        if (muted) return;
+        
         try {
             if (soundCache.containsKey(filename)) {
                 Clip clip = soundCache.get(filename);
@@ -36,6 +39,8 @@ public class SoundManager {
     }
     
     public static void playLooping(String filename) {
+        if (muted) return;
+        
         try {
             if (currentBGM != null && currentBGM.isRunning()) {
                 currentBGM.stop();
@@ -74,6 +79,19 @@ public class SoundManager {
         }
     }
     
+    public static void toggleMute() {
+        muted = !muted;
+        if (muted) {
+            if (currentBGM != null) currentBGM.stop();
+        } else {
+            if (currentBGM != null) currentBGM.start();
+        }
+    }
+    
+    public static boolean isMuted() {
+        return muted;
+    }
+    
     public static void playButton() {
         playSound("button_sound.wav");
     }
@@ -92,5 +110,9 @@ public class SoundManager {
     
     public static void playDefeat() {
         playSound("defeat_sound.wav");
+    }
+    
+    public static void playLevelUp() {
+        playSound("levelup_sound.wav");
     }
 }
