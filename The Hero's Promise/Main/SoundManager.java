@@ -1,26 +1,76 @@
 package Main;
 import java.io.File;
 import javax.sound.sampled.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SoundManager {
-    private static Clip currentClip;
+    private static Map<String, Clip> soundCache = new HashMap<>();
+    private static Clip currentBGM;
+    private static float currentVolume = 1.0f;
     
     public static void playSound(String filename) {
         try {
-            String[] paths = {"Main/" + filename, filename};
+            if (soundCache.containsKey(filename)) {
+                Clip clip = soundCache.get(filename);
+                clip.setFramePosition(0);
+                clip.start();
+                return;
+            }
+            
+            String[] paths = {"Main/" + filename, "The Hero's Promise/Main/" + filename, filename};
             for (String path : paths) {
                 File soundFile = new File(path);
                 if (soundFile.exists()) {
                     AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
                     Clip clip = AudioSystem.getClip();
                     clip.open(ais);
+                    soundCache.put(filename, clip);
                     clip.start();
-                    currentClip = clip;
                     return;
                 }
             }
         } catch (Exception e) {
             System.out.println("Sound error: " + e.getMessage());
+        }
+    }
+    
+    public static void playLooping(String filename) {
+        try {
+            if (currentBGM != null && currentBGM.isRunning()) {
+                currentBGM.stop();
+            }
+            
+            String[] paths = {"Main/" + filename, "The Hero's Promise/Main/" + filename, filename};
+            for (String path : paths) {
+                File soundFile = new File(path);
+                if (soundFile.exists()) {
+                    AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
+                    currentBGM = AudioSystem.getClip();
+                    currentBGM.open(ais);
+                    currentBGM.loop(Clip.LOOP_CONTINUOUSLY);
+                    setVolume(currentVolume);
+                    currentBGM.start();
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Looping sound error: " + e.getMessage());
+        }
+    }
+    
+    public static void stopLooping() {
+        if (currentBGM != null && currentBGM.isRunning()) {
+            currentBGM.stop();
+        }
+    }
+    
+    public static void setVolume(float volume) {
+        currentVolume = Math.max(0f, Math.min(1f, volume));
+        if (currentBGM != null && currentBGM.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            FloatControl gainControl = (FloatControl) currentBGM.getControl(FloatControl.Type.MASTER_GAIN);
+            float dB = (float) (Math.log(currentVolume) / Math.log(10.0) * 20.0);
+            gainControl.setValue(Math.max(gainControl.getMinimum(), Math.min(gainControl.getMaximum(), dB)));
         }
     }
     
@@ -42,11 +92,5 @@ public class SoundManager {
     
     public static void playDefeat() {
         playSound("defeat_sound.wav");
-    }
-    
-    public static void stopSound() {
-        if (currentClip != null && currentClip.isRunning()) {
-            currentClip.stop();
-        }
     }
 }
