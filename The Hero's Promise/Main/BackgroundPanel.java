@@ -5,33 +5,27 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class BackgroundPanel extends JPanel {
-    private BufferedImage image;
-    private final GameGUI gui;
 
-    public BackgroundPanel(GameGUI gui) {
-        this.gui = gui;
+    private BufferedImage image;
+
+    public BackgroundPanel() {
+        // gui reference not yet introduced; image loaded externally and set
         setOpaque(true);
-        setBackground(new Color(10, 8, 5));
-        image = gui.loadBg("background_terminal");
+        setBackground(Color.BLACK);
     }
 
-    public void setImage(BufferedImage img) { this.image = img; repaint(); }
+    public void setImage(BufferedImage img) {
+        this.image = img;
+        repaint();
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (image != null) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
-            GradientPaint fade = new GradientPaint(0, getHeight() - 60, new Color(0, 0, 0, 0), 0, getHeight(), new Color(0, 0, 0, 180));
-            g2.setPaint(fade);
-            g2.fillRect(0, getHeight() - 60, getWidth(), 60);
-        } else {
-            Graphics2D g2 = (Graphics2D) g;
-            GradientPaint gp = new GradientPaint(0, 0, new Color(20, 10, 0), 0, getHeight(), new Color(5, 3, 0));
-            g2.setPaint(gp);
-            g2.fillRect(0, 0, getWidth(), getHeight());
+            // Simple stretch draw; no bilinear hint, no gradient fade overlay yet
+            g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
         }
+        // No fallback gradient yet; blank black if null
     }
 }
