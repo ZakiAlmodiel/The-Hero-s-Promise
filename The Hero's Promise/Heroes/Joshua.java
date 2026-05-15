@@ -1,37 +1,50 @@
 package Heroes;
 
 public class Joshua extends Hero {
+    // Constants declared but balancing not finalized
     private static final int DAMAGE_SKILL1 = 10;
-    private static final int DAMAGE_SKILL2 = 15;
-    private static final int DAMAGE_SKILL3 = 30;
+    private static final int DAMAGE_SKILL2 = 20;
+    private static final int DAMAGE_SKILL3 = 15;
     private static final int MANA_COST1 = 15;
-    private static final int MANA_COST2 = 20;
-    private static final int MANA_COST3 = 35;
+    private static final int MANA_COST2 = 30;
+    private static final int MANA_COST3 = 20;
 
-    public Joshua(String name) {
-        super(name, "Holy Smite", "Divine Shield", "Judgment", DAMAGE_SKILL1, DAMAGE_SKILL2, DAMAGE_SKILL3, MANA_COST1, MANA_COST2, MANA_COST3);
+    public Adrian(String name) {
+        super(name, "Arcane Bolt", "Mana Barrier", "Fireball",
+              DAMAGE_SKILL1, DAMAGE_SKILL2, DAMAGE_SKILL3,
+              MANA_COST1, MANA_COST2, MANA_COST3);
     }
 
     @Override
     public void displayBackStory() {
-        System.out.println("-----------------BACKSTORY-------------------");
-        System.out.println();
-        System.out.println("Joshua was raised in a secluded monastery, studying ancient texts and divine arts. When darkness spread across the land, the elders sent him forth as their champion. Armed with unwavering faith and holy power, he walks the path of light, healing the wounded and smiting evil wherever it lurks.");
+        // Placeholder text; final wording not yet polished
+        System.out.println("Adrian is a mage who uses arcane magic.");
     }
 
     @Override
     public void displaySkillOptions() {
-        System.out.println("Skill 1 (Holy Smite) | " + getSkillOneMultiplier() + " damage | " + getSkillOneManaCost() + " Mana cost");
-        System.out.println("Skill 2 (Divine Shield) | " + getSkillTwoMultiplier() + " damage | " + getSkillTwoManaCost() + " Mana cost");
-        System.out.println("Skill 3 (Judgment) | " + getSkillThreeMultiplier() + " damage | " + getSkillThreeManaCost() + " Mana cost");
+        // Raw println; no getters used yet (still hardcoded numbers)
+        System.out.println("Skill 1 (Arcane Bolt) | 10 damage | 15 Mana cost");
+        System.out.println("Skill 2 (Mana Barrier) | 20 damage | 30 Mana cost");
+        System.out.println("Skill 3 (Fireball) | 15 damage | 20 Mana cost");
         System.out.println("Skill 4 (Heal HP)");
         System.out.println("Skill 5 (Heal Mana)");
     }
 
     @Override
-    public void preBattleDialogue() { System.out.printf("\nJoshua: The light shall prevail.\n"); }
+    public void preBattleDialogue() {
+        System.out.println("Adrian: The arcane answers my call.");
+        // printf not used yet; no leading newline
+    }
+
     @Override
-    public void victoryDialogue() { System.out.printf("\nJoshua: The righteous always triumph.\n"); }
+    public void victoryDialogue() {
+        System.out.println("Adrian: A predictable outcome.");
+    }
+
     @Override
-    public void defeatDialogue() { System.out.printf("\nJoshua: Forgive... me...\n"); }
+    public void defeatDialogue() {
+        System.out.println("Adrian: My studies were incomplete...");
+        // dramatic ellipsis phrasing not yet finalized
+    }
 }
