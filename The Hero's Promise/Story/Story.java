@@ -47,7 +47,7 @@ public class Story {
     public static void afterLevel2() {
         System.out.println("\n--------------------------------------------------");
         System.out.println("--------------------------------------------------");
-        System.out.println("The ground trembled as the enemy collapsed. The ruins fell silent once more.");
+        System.out.println("The ground trembled as the enemy. The ruins fell silent once more.");
         System.out.println("From its remains, a faint golden symbol shone ... a fragment of the Oath Stone.");
         System.out.println("The hero picked it up, feeling warmth and power course through their veins.");
         System.out.println("But the silence didn't last. A roar echoed in the distance ...");
@@ -58,7 +58,7 @@ public class Story {
     public static void beforeBossFight() {
         System.out.println("\n--------------------------------------------------");
         System.out.println("--------------------------------------------------");
-        System.out.println("At the heart of the shattered mountain stood the Temple of Ash.");
+        System.out.println(" heart of the shattered mountain stood the Temple of Ash.");
         System.out.println("There, the Final Warden awaited ... the being who swore to end all who broke the ancient Oath.");
         System.out.println("The air burned with power. The hero could feel destiny pulling tighter.");
         System.out.println("Every wound, every loss, every victory ... led to this single moment.");
