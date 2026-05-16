@@ -1,4 +1,5 @@
 package Main;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -8,196 +9,97 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SpritePanel extends JPanel {
-    private String characterName;
     private boolean isHero;
-    private int currentHp = 100;
-    private int maxHp = 100;
-    private int currentMana = 100;
-    private int maxMana = 100;
-    private boolean showBars = false;
-    private boolean useSymbol = true;
+    private String characterName;
     private String currentState = "idle";
-    private Map<String, BufferedImage> spriteCache;
+    private boolean spriteVisible = true;
+    private boolean useSymbol = true;
+    private int currentHp = 100, maxHp = 100;
+    private int currentMana = 100, maxMana = 100;
+    private boolean showBars = false;
+    private boolean infinityMana = false;
+    private final Map<String, BufferedImage> imageCache = new HashMap<>();
     private Timer animationTimer;
-    private int animationFrame = 0;
-    
+    private int animFrame = 0;
+
     public SpritePanel(String characterName, boolean isHero) {
         this.characterName = characterName;
         this.isHero = isHero;
-        this.spriteCache = new HashMap<>();
         setOpaque(false);
-        setPreferredSize(new Dimension(350, 420));
-        setMinimumSize(new Dimension(250, 320));
-        
-        animationTimer = new Timer(100, e -> {
-            animationFrame = (animationFrame + 1) % 4;
-            repaint();
-        });
+        setBorder(null);
+        animationTimer = new Timer(600, e -> { animFrame = (animFrame + 1) % 2; repaint(); });
+        animationTimer.start();
+        preload("hero_symbol", "idle");
+        preload("enemy_symbol", "idle");
     }
-    
-    public void setCharacterName(String name) {
-        this.characterName = name;
-        repaint();
-    }
-    
-    public void setSprite(String name, String state) {
-        this.characterName = name;
-        this.currentState = state;
-        this.useSymbol = false;
-        loadSprite(name, state);
-        
-        if (state.equals("idle")) {
-            animationTimer.stop();
-        } else {
-            animationTimer.start();
-        }
-        
-        repaint();
-        
-        if (!state.equals("idle")) {
-            Timer resetTimer = new Timer(600, e -> {
-                currentState = "idle";
-                animationTimer.stop();
-                repaint();
-            });
-            resetTimer.setRepeats(false);
-            resetTimer.start();
-        }
-    }
-    
-    private void loadSprite(String name, String state) {
+
+    public void showSymbol() { useSymbol = true; spriteVisible = true; currentState = "idle"; showBars = false; repaint(); }
+    public void setSprite(String name, String state) { characterName = name; currentState = state; spriteVisible = true; useSymbol = false; preload(name, state); repaint(); if (!state.equals("idle")) { Timer t = new Timer(600, e -> { currentState = "idle"; repaint(); }); t.setRepeats(false); t.start(); } }
+    public void setCharacterName(String name) { characterName = name; repaint(); }
+    public void hideSprite() { spriteVisible = false; useSymbol = false; repaint(); }
+    public void showSprite() { spriteVisible = true; repaint(); }
+    public void updateBars(int hp, int maxHp, int mana, int maxMana) { this.currentHp = hp; this.maxHp = maxHp; this.currentMana = mana; this.maxMana = maxMana; this.infinityMana = !isHero; this.showBars = true; repaint(); }
+    public void hideBars() { showBars = false; repaint(); }
+
+    private void preload(String name, String state) {
         String key = name + "_" + state;
-        if (spriteCache.containsKey(key)) return;
-        
-        String filename = name + "_" + state + ".png";
+        if (imageCache.containsKey(key)) return;
+        boolean isSymbol = name.endsWith("_symbol");
+        String filename = isSymbol ? name + ".png" : name + "_" + state + ".png";
         String[] paths = {"Images/" + filename, "The Hero's Promise/Images/" + filename, filename};
-        
-        for (String path : paths) {
-            try {
-                File f = new File(path);
-                if (f.exists()) {
-                    BufferedImage img = ImageIO.read(f);
-                    if (img != null) {
-                        spriteCache.put(key, img);
-                        return;
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println("Failed to load sprite: " + path);
-            }
-        }
-    }
-    
-    public void updateBars(int hp, int maxHp, int mana, int maxMana) {
-        this.currentHp = hp;
-        this.maxHp = maxHp;
-        this.currentMana = mana;
-        this.maxMana = maxMana;
-        this.showBars = true;
-        this.useSymbol = false;
-        repaint();
-    }
-    
-    public void showSymbol() {
-        this.showBars = false;
-        this.useSymbol = true;
-        this.currentState = "idle";
-        animationTimer.stop();
-        repaint();
-    }
-    
-    public void hideBars() {
-        this.showBars = false;
-        repaint();
-    }
-    
-    public void setHeroAnimation(String action) {
-        setSprite(characterName, action);
-    }
-    
-    private void drawBar(Graphics2D g2, int x, int y, int width, int height, int current, int max, Color color, String label) {
-        g2.setColor(new Color(40, 40, 40, 200));
-        g2.fillRoundRect(x, y, width, height, 6, 6);
-        
-        int fillWidth = (int)((double)current / max * width);
-        if (fillWidth > 0) {
-            g2.setColor(color);
-            g2.fillRoundRect(x, y, fillWidth, height, 6, 6);
-        }
-        
-        g2.setColor(new Color(200, 200, 200, 150));
-        g2.setStroke(new BasicStroke(1f));
-        g2.drawRoundRect(x, y, width, height, 6, 6);
-        
-        String text = label + ": " + current + "/" + max;
-        g2.setFont(new Font("SansSerif", Font.BOLD, 11));
-        FontMetrics fm = g2.getFontMetrics();
-        int textX = x + (width - fm.stringWidth(text)) / 2;
-        int textY = y + (height + fm.getAscent() - fm.getDescent()) / 2;
-        g2.setColor(Color.WHITE);
-        g2.drawString(text, textX, textY);
+        for (String p : paths) { try { BufferedImage img = ImageIO.read(new File(p)); if (img != null) { imageCache.put(key, img); return; } } catch (Exception ignored) {} }
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
+        Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        
-        int w = getWidth();
-        int h = getHeight();
-        
-        if (useSymbol) {
-            g2.setFont(new Font("SansSerif", Font.BOLD, 28));
-            g2.setColor(new Color(255, 200, 100));
-            String symbol = isHero ? "⚔️ HERO" : "👾 ENEMY";
-            FontMetrics fm = g2.getFontMetrics();
-            int x = (w - fm.stringWidth(symbol)) / 2;
-            g2.drawString(symbol, x, h / 2);
-            
-            g2.setFont(new Font("SansSerif", Font.ITALIC, 14));
-            g2.setColor(new Color(150, 100, 50));
-            String waiting = isHero ? "Waiting for selection..." : "Encounter incoming...";
-            fm = g2.getFontMetrics();
-            x = (w - fm.stringWidth(waiting)) / 2;
-            g2.drawString(waiting, x, h / 2 + 40);
-        }
-        
-        if (showBars) {
-            g2.setFont(new Font("SansSerif", Font.BOLD, 16));
-            g2.setColor(new Color(255, 200, 100));
-            FontMetrics fm = g2.getFontMetrics();
-            int nameX = (w - fm.stringWidth(characterName)) / 2;
-            g2.drawString(characterName, nameX, 35);
-            
-            drawBar(g2, 30, 55, w - 60, 18, currentHp, maxHp, new Color(200, 50, 50), "HP");
-            drawBar(g2, 30, 82, w - 60, 18, currentMana, maxMana, new Color(50, 100, 220), "MP");
-        }
-        
-        String key = characterName + "_" + currentState;
-        if (spriteCache.containsKey(key)) {
-            BufferedImage sprite = spriteCache.get(key);
-            int spriteW = Math.min(sprite.getWidth(), w - 60);
-            int spriteH = (int)((double)spriteW / sprite.getWidth() * sprite.getHeight());
-            int x = (w - spriteW) / 2;
-            int y = showBars ? 115 : 70;
-            
-            if (currentState.equals("attack") && animationFrame % 2 == 0) {
-                x += 5;
-            } else if (currentState.equals("hurt")) {
-                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
-            }
-            
-            g2.drawImage(sprite, x, y, spriteW, spriteH, null);
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-        } else if (!useSymbol && showBars) {
-            g2.setFont(new Font("SansSerif", Font.BOLD, 48));
-            g2.setColor(new Color(100, 100, 100, 100));
-            String placeholder = isHero ? "🧙" : "👾";
-            FontMetrics fm = g2.getFontMetrics();
-            int x = (w - fm.stringWidth(placeholder)) / 2;
-            g2.drawString(placeholder, x, 200);
-        }
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        int w = getWidth(), h = getHeight();
+        int barZone = showBars ? 52 : 0;
+        if (showBars) drawBars(g2, w);
+        if (!spriteVisible) { g2.dispose(); return; }
+        String key = useSymbol ? (isHero ? "hero_symbol" : "enemy_symbol") + "_idle" : characterName + "_" + currentState;
+        if (!imageCache.containsKey(key)) preload(characterName, currentState);
+        BufferedImage img = imageCache.get(key);
+        if (img == null) { g2.dispose(); return; }
+        int availH = h - barZone, availW = w;
+        double scaleFit = Math.min((double) availW / img.getWidth(), (double) availH / img.getHeight());
+        double scale = Math.min(scaleFit * 2.0, Math.min((double)(availW - 4) / img.getWidth(), (double)(availH - 4) / img.getHeight()));
+        int dw = (int)(img.getWidth() * scale), dh = (int)(img.getHeight() * scale);
+        int dx = (w - dw) / 2;
+        int gapPx = 38, dy = h - dh - gapPx;
+        if (dy < barZone) dy = barZone;
+        g2.drawImage(img, dx, dy, dw, dh, null);
+        g2.dispose();
+    }
+
+    private void drawBars(Graphics2D g2, int w) {
+        int bw = w - 20, bh = 14, x = 10, y1 = 6, y2 = y1 + bh + 8;
+        drawBar(g2, x, y1, bw, bh, (double) currentHp / maxHp, new Color(200, 50, 50), new Color(60, 10, 10), "HP " + currentHp + "/" + maxHp);
+        if (infinityMana) { drawBar(g2, x, y2, bw, bh, 1.0, new Color(50, 100, 220), new Color(10, 20, 60), "MP \u221E"); }
+        else { drawBar(g2, x, y2, bw, bh, (double) currentMana / maxMana, new Color(50, 100, 220), new Color(10, 20, 60), "MP " + currentMana + "/" + maxMana); }
+        String name = useSymbol ? (isHero ? "HERO" : "ENEMY") : characterName;
+        g2.setFont(new Font("SansSerif", Font.BOLD, 11));
+        g2.setColor(GameGUI.ORANGE_GLOW);
+        FontMetrics fm = g2.getFontMetrics();
+        g2.drawString(name, (w - fm.stringWidth(name)) / 2, y2 + bh + 14);
+    }
+
+    private void drawBar(Graphics2D g2, int x, int y, int w, int h, double ratio, Color fill, Color bg, String label) {
+        g2.setColor(bg);
+        g2.fillRoundRect(x, y, w, h, 6, 6);
+        int fw = (int)(w * Math.max(0, Math.min(1, ratio)));
+        if (fw > 0) { g2.setColor(fill); g2.fillRoundRect(x, y, fw, h, 6, 6); }
+        g2.setColor(new Color(200, 200, 200, 60));
+        g2.setStroke(new BasicStroke(1f));
+        g2.drawRoundRect(x, y, w, h, 6, 6);
+        g2.setFont(new Font("SansSerif", Font.BOLD, 10));
+        g2.setColor(Color.WHITE);
+        FontMetrics fm = g2.getFontMetrics();
+        int lx = x + (w - fm.stringWidth(label)) / 2;
+        int ly = y + (h + fm.getAscent() - fm.getDescent()) / 2;
+        g2.drawString(label, lx, ly);
     }
 }
