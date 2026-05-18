@@ -10,9 +10,15 @@ public class Adrian extends Hero {
 
     public Adrian(String name) {
         super(name,
-              "Arcane Bolt", "Mana Barrier", "Fireball",
-              DAMAGE_SKILL1, DAMAGE_SKILL2, DAMAGE_SKILL3,
-              MANA_COST1, MANA_COST2, MANA_COST3);
+              "Arcane Bolt",
+              "Mana Barrier",
+              "Fireball",
+              DAMAGE_SKILL1,
+              DAMAGE_SKILL2,
+              DAMAGE_SKILL3,
+              MANA_COST1,
+              MANA_COST2,
+              MANA_COST3);
     }
 
     @Override
@@ -26,12 +32,10 @@ public class Adrian extends Hero {
             "he embraced his power fully, vowing to master every " +
             "spell to ensure no one ever suffers as his family did."
         );
-        // Final wording matches; no further edits needed here
     }
 
     @Override
     public void displaySkillOptions() {
-        // getters now used instead of hardcoded numbers
         System.out.println(
             "Skill 1 (Arcane Bolt) | " + getSkillOneMultiplier() +
             " damage | " + getSkillOneManaCost() + " Mana cost"
