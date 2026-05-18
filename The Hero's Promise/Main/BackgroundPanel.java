@@ -4,6 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * The top-half panel that renders the current level background image,
+ * stretched to fill the panel bounds.
+ */
 public class BackgroundPanel extends JPanel {
 
     private BufferedImage image;
@@ -13,6 +17,7 @@ public class BackgroundPanel extends JPanel {
         this.gui = gui;
         setOpaque(true);
         setBackground(new Color(10, 8, 5));
+        // Load default (terminal/hero-selection) background
         image = gui.loadBg("background_terminal");
     }
 
@@ -29,17 +34,20 @@ public class BackgroundPanel extends JPanel {
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
-            // Gradient fade at bottom added; values slightly off from final
+            // Subtle dark gradient at bottom to blend into terminal
             GradientPaint fade = new GradientPaint(
                 0, getHeight() - 60, new Color(0, 0, 0, 0),
                 0, getHeight(),      new Color(0, 0, 0, 180));
             g2.setPaint(fade);
             g2.fillRect(0, getHeight() - 60, getWidth(), 60);
         } else {
+            // Fallback gradient
             Graphics2D g2 = (Graphics2D) g;
-            g2.setColor(new Color(20, 10, 0));
+            GradientPaint gp = new GradientPaint(
+                0, 0, new Color(20, 10, 0),
+                0, getHeight(), new Color(5, 3, 0));
+            g2.setPaint(gp);
             g2.fillRect(0, 0, getWidth(), getHeight());
-            // Fallback gradient not yet refined to two-stop GradientPaint
         }
     }
 }
