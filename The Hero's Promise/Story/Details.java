@@ -17,6 +17,8 @@ public class Details {
         System.out.println();
         System.out.println("--------------------------------------------------");
         System.out.printf("NAMES:%15s%25s\n", hero.getHeroName(), enemy.getEnemyName());
-       
+        System.out.printf("HP:%17d %22d\n", hero.getHeroHp(), enemy.getEnemyHp());
+        System.out.printf("MP:%17d %22d\n", hero.getHeroMana(), enemy.getEnemyMana());
+        System.out.println();
     }
 }
