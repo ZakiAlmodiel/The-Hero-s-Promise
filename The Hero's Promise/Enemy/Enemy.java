@@ -4,35 +4,59 @@ import Heroes.Hero;
 public class Enemy {
     private String enemyName;
     private int enemyHp;
+    private int enemyMana;
     private int enemyDamage;
-    // enemyMana not yet added; heal() and drainMana() not yet thought of
-    
+    private static int dialogueCounter = 0;
+
     public Enemy(String name, int hp, int attack) {
         this.enemyName = name;
         this.enemyHp = hp;
         this.enemyDamage = attack;
+        this.enemyMana = 0;
     }
-    
+
     public String getEnemyName() { return enemyName; }
     public int getEnemyHp()     { return enemyHp; }
+    public int getEnemyMana()   { return enemyMana; }
     public int getEnemyDamage() { return enemyDamage; }
-    
+
     public void setEnemyHp(int hp) {
-        this.enemyHp = hp; // no Math.max(0, hp) guard yet
+        this.enemyHp = Math.max(0, hp);
     }
-    
+
+    public void setEnemyMana(int mana) {
+        this.enemyMana = Math.max(0, mana);
+    }
+
     public void takeDamage(int damage) {
-        this.enemyHp -= damage; // can go negative; not yet guarded
+        this.enemyHp = Math.max(0, this.enemyHp - damage);
     }
-    
+
+    public void heal(int amount) {
+        this.enemyHp += amount;
+        // max cap (150) not yet applied; unchecked
+    }
+
+    public void drainMana(int amount) {
+        this.enemyMana = Math.max(0, this.enemyMana - amount);
+    }
+
     public void enemyAttack(Hero hero) {
-        hero.takeDamage(enemyDamage);
-        System.out.println(enemyName + " attacked! Dealt " + enemyDamage + " damage.");
-        // no blank line formatting yet
+        int damage = this.enemyDamage;
+        hero.takeDamage(damage);
+        System.out.println();
+        System.out.print(enemyName + " has attacked you! Dealt " + damage + " damage");
     }
-    
+
     public void enemyDefeatedDialogue() {
-        // only one death line so far; rotation array not yet implemented
-        System.out.println("Enemy: Nooo... my gold...");
+        String[] deathDialogues = {
+            "Enemy: Nooo... my gold...",
+            "Enemy: Impossible... I'm... strong...",
+            "Enemy: My spells... failed me...",
+            "Enemy: Death... takes me again..."
+            // fifth line "I... am... eternal..." not yet written
+        };
+        System.out.printf("\n%s\n", deathDialogues[dialogueCounter]);
+        dialogueCounter = (dialogueCounter + 1) % deathDialogues.length;
     }
 }

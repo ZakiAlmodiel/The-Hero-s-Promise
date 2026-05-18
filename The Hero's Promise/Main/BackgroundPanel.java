@@ -7,11 +7,13 @@ import java.awt.image.BufferedImage;
 public class BackgroundPanel extends JPanel {
 
     private BufferedImage image;
+    private final GameGUI gui;
 
-    public BackgroundPanel() {
-        // gui reference not yet introduced; image loaded externally and set
+    public BackgroundPanel(GameGUI gui) {
+        this.gui = gui;
         setOpaque(true);
-        setBackground(Color.BLACK);
+        setBackground(new Color(10, 8, 5));
+        image = gui.loadBg("background_terminal");
     }
 
     public void setImage(BufferedImage img) {
@@ -23,9 +25,21 @@ public class BackgroundPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (image != null) {
-            // Simple stretch draw; no bilinear hint, no gradient fade overlay yet
-            g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+            // Gradient fade at bottom added; values slightly off from final
+            GradientPaint fade = new GradientPaint(
+                0, getHeight() - 60, new Color(0, 0, 0, 0),
+                0, getHeight(),      new Color(0, 0, 0, 180));
+            g2.setPaint(fade);
+            g2.fillRect(0, getHeight() - 60, getWidth(), 60);
+        } else {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setColor(new Color(20, 10, 0));
+            g2.fillRect(0, 0, getWidth(), getHeight());
+            // Fallback gradient not yet refined to two-stop GradientPaint
         }
-        // No fallback gradient yet; blank black if null
     }
 }
