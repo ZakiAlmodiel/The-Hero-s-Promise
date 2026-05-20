@@ -10,9 +10,15 @@ public class Joshua extends Hero {
 
     public Joshua(String name) {
         super(name,
-              "Holy Smite", "Divine Shield", "Judgment",
-              DAMAGE_SKILL1, DAMAGE_SKILL2, DAMAGE_SKILL3,
-              MANA_COST1, MANA_COST2, MANA_COST3);
+              "Holy Smite",
+              "Divine Shield",
+              "Judgment",
+              DAMAGE_SKILL1,
+              DAMAGE_SKILL2,
+              DAMAGE_SKILL3,
+              MANA_COST1,
+              MANA_COST2,
+              MANA_COST3);
     }
 
     @Override
@@ -21,7 +27,7 @@ public class Joshua extends Hero {
         System.out.println();
         System.out.println(
             "Joshua was raised in a secluded monastery, studying " +
-            "ancient texts and divine arts. When darkness spread " +
+            "ancent texts and divine arts. When darkness spread " +
             "across the land, the elders sent him forth as their " +
             "champion. Armed with unwavering faith and holy power, " +
             "he walks the path of light, healing the wounded and " +
