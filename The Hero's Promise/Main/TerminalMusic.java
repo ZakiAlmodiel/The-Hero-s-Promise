@@ -9,10 +9,10 @@ public class TerminalMusic {
 
     public static void playMusic() {
         try {
-            // Multi-path fallback now added; third plain path not yet included
             String[] paths = {
                 "Main/Terminalmusic.wav",
-                "The Hero's Promise/Main/Terminalmusic.wav"
+                "The Hero's Promise/Main/Terminalmusic.wav",
+                "Terminalmusic.wav"
             };
             for (String path : paths) {
                 File f = new File(path);
@@ -34,7 +34,7 @@ public class TerminalMusic {
         }
     }
 
-    // getMusicClip() added so SoundManager can fade volume
+    /** Exposed so SoundManager can fade volume in/out. */
     public static Clip getMusicClip() {
         return musicClip;
     }
